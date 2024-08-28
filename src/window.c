@@ -1,5 +1,11 @@
 #include "main.h"
 
+/**
+ * init_instance - initialises SDL2 and creates window and renderer
+ * @instance: pointer to SDL instance struct
+ * Return: 0 on success
+ */
+
 int init_instance(SDL_Instance *instance)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -9,14 +15,14 @@ int init_instance(SDL_Instance *instance)
 	}
 
 	instance->window = SDL_CreateWindow("Maze Game",
-	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280,720, 0);
+	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
 	if (instance->window == NULL)
 	{
 		fprintf(stderr, "SDL winto creation error: %s\n", SDL_GetError());
 		SDL_Quit();
 		return (1);
 	}
-	instance->renderer = SDL_CreateRenderer(instance->window, -1, 0)
+	instance->renderer = SDL_CreateRenderer(instance->window, -1, 0);
 	if (instance->renderer == NULL)
 	{
 		SDL_DestroyWindow(instance->window);
