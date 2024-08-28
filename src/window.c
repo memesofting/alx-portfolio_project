@@ -15,7 +15,7 @@ int init_instance(SDL_Instance *instance)
 	}
 
 	instance->window = SDL_CreateWindow("Maze Game",
-	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
+	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	if (instance->window == NULL)
 	{
 		fprintf(stderr, "SDL winto creation error: %s\n", SDL_GetError());
