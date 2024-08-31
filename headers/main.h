@@ -4,9 +4,11 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <math.h>
+#include <stdlib.h>
 
 #define SCREEN_WIDTH  1920
 #define SCREEN_HEIGHT  720
+#define MAP_SIZE 15
 
 typedef struct SDL_Instance
 {
