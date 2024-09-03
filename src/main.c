@@ -51,7 +51,7 @@ int main(void)
 	}
 	while (game_loop)
 	{
-		game_loop = check_key();
+		game_loop = check_key(&playerX, &playerY, &playerDirX, &playerDirY, &planeX, &planeY);
 		SDL_SetRenderDrawColor(instance.renderer, 0, 45, 0, 255);
 		SDL_RenderClear(instance.renderer);
 		/* draw walls here*/
