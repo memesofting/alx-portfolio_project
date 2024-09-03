@@ -1,7 +1,7 @@
 #include "main.h"
 
 int raycast(SDL_Renderer *renderer, float playerX, float playerY,
-float playerDirX, float playerDirY, float planeX, float planeY, int** map)
+float playerDirX, float playerDirY, float planeX, float planeY, int **map)
 {
 	int x;
 
@@ -105,21 +105,16 @@ float playerDirX, float playerDirY, float planeX, float planeY, int** map)
 		SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
 		SDL_RenderDrawLine(renderer, x, 0, x, drawStart);
 		/*Set wall color (based on side hit)*/
-		// SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
-		// SDL_RenderDrawLine(renderer, x, 0, x, drawStart);
 		int colorIntensity = (int)(255 / (1 + perpWallDist * perpWallDist * 0.1));
 		if (sideHit == 0)
-			SDL_SetRenderDrawColor(renderer, colorIntensity, 0, 0, 255);  // X side
+			SDL_SetRenderDrawColor(renderer, colorIntensity, 0, 0, 255);  /*X side*/
 		else
-			SDL_SetRenderDrawColor(renderer, colorIntensity / 2, 0, 0, 255);  // Y side, darker
-		/*Darker for Y side*/
-		// if (sideHit == 1) SDL_SetRenderDrawColor(renderer, 128, 0, 0, 255);
+			SDL_SetRenderDrawColor(renderer, colorIntensity / 2, 0, 0, 255);  /*Y side, darker*/
 
 		/*Draw the wall slice as a vertical line*/
 		SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
-		// SDL_SetRenderDrawColor(renderer, x, drawStart, x, drawEnd);
 		/*draw floor*/
-		SDL_SetRenderDrawColor(renderer, 105, 105, 105, 255);  // Dark gray color for the floor
+		SDL_SetRenderDrawColor(renderer, 105, 105, 105, 255);  /*Dark gray color for the floor*/
 		SDL_RenderDrawLine(renderer, x, drawEnd, x, SCREEN_HEIGHT);
 	}
 	/*free_maze(map);*/
