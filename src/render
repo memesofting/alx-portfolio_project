@@ -1,0 +1,21 @@
+void render_maze(SDL_Renderer* renderer, int** maze)
+{
+	int y, x;
+
+    for (y = 0; y < MAP_SIZE; y++)
+	{
+        for (x = 0; x < MAP_SIZE; x++)
+		{
+            SDL_Rect rect = {x * 20, y * 20, 20, 20};
+            if (maze[y][x] == 1)
+			{
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // Passage (white)
+            }
+			else
+			{
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Wall (black)
+            }
+            SDL_RenderFillRect(renderer, &rect);
+        }
+    }
+}

@@ -1,5 +1,104 @@
 #include "main.h"
 
+/*int maze[MAP_SIZE][MAP_SIZE];*/
+/*int** maze;*/
+/*passage movement direction*/
+int dx[4] = {0, 0, -1, 1};
+int dy[4] = {-1, 1, 0, 0};
+
+void init_maze(int** maze)
+{
+	/*0 = wall, 1 = passage*/
+	int i, j;
+
+	for (i = 0; i < MAP_SIZE; i++)
+	{
+		for (j = 0; j < MAP_SIZE; j++)
+		{
+			/*set all cells as wall*/
+			maze[i][j] = 0;
+		}
+	}
+}
+
+int is_valid(int x, int y, int** maze)
+{
+	return x >= 0 && x < MAP_SIZE &&
+	y >= 0 && y < MAP_SIZE && maze[y][x] == 0;
+}
+
+void generate_maze(int x, int y, int** maze)
+{
+	/*nx and ny are neighbor grids*/
+	int i, r, temp, nx, ny;
+	int direction[4] = {0, 1, 2, 3};
+
+	maze[y][x] = 1;
+	for (i = 0; i < 4; i++)
+	{
+		r = rand() % 4;
+		temp = direction[i];
+		direction[i] = direction[r];
+		direction[r] = temp;
+	}
+
+	/*check neighbors in random order*/
+	for (i = 0; i < 4; i++)
+	{
+		nx = x + dx[direction[i]] * 2;
+		ny = y + dy[direction[i]] * 2;
+		/*check if grid is a wall*/
+		if (is_valid(nx, ny, maze))
+		{
+			/*create passage*/
+			maze[y + dy[direction[i]]][x + dx[direction[i]]] = 1;
+			/*recuresively generate maze*/
+			generate_maze(nx, ny, maze);
+		}
+	}
+}
+
+int** random_maze(void)
+{
+	// int maze[MAP_SIZE][MAP_SIZE];
+	int** maze;
+	int i, j;
+
+	maze = malloc(MAP_SIZE * sizeof(int*));
+	if (maze == NULL)
+	{
+		return (NULL);
+	}
+    for (i = 0; i < MAP_SIZE; i++) {
+        maze[i] = malloc(MAP_SIZE * sizeof(int));
+		if (maze[i] == NULL)
+		{
+			for (j = 0; j < i; j++)
+			{
+				free(maze[j]);
+			}
+			free(maze);
+			return (NULL);
+		}
+    }
+
+    // Initialize and generate the maze
+    init_maze(maze);
+    generate_maze(1, 1, maze);
+
+    return maze;
+}
+
+void free_maze(int** maze)
+{  
+	int i;
+    for (i = 0; i < MAP_SIZE; i++) {  
+        free(maze[i]);  
+    }  
+    free(maze);  
+}  
+
+
 /**
  * main - main function for running game
  * Return: 0 on success
@@ -7,13 +106,15 @@
 
 int main(void)
 {
+	srand(time(NULL));
 	SDL_Event event;
 	SDL_Instance instance;
+	int** map;
 	int game_loop;
 	float playerX, playerY, planeX, planeY, playerDirX, playerDirY;
 
 	playerX = 3.0f;
-	playerY = 3.0f;
+	playerY = 4.0f;
 	playerDirX = -1.0f;
 	playerDirY = 0.0f;
 	planeX = 0.0f;  /*For FOV projection*/
@@ -22,6 +123,14 @@ int main(void)
 	game_loop = 1;
 	if (init_instance(&instance) != 0)
 	{
+		return (1);
+	}
+	map = random_maze();
+	if (map == NULL)
+	{
+		SDL_DestroyRenderer(instance.renderer);
+		SDL_DestroyWindow(instance.window);
+		SDL_Quit();
 		return (1);
 	}
 	while (game_loop)
@@ -46,109 +155,12 @@ int main(void)
 		SDL_SetRenderDrawColor(instance.renderer, 0, 45, 0, 255);
 		SDL_RenderClear(instance.renderer);
 		/* draw walls here*/
-		raycast(instance.renderer, playerX, playerY, playerDirX, playerDirY, planeX, planeY);
+		raycast(instance.renderer, playerX, playerY, playerDirX, playerDirY, planeX, planeY, map);
 		SDL_RenderPresent(instance.renderer);
 	}
+	free_maze(map);
 	SDL_DestroyRenderer(instance.renderer);
 	SDL_DestroyWindow(instance.window);
 	SDL_Quit();
-	return (0);
-}
-
-int raycast(SDL_Renderer *renderer, float playerX, float playerY, float playerDirX, float playerDirY, float planeX, float planeY)
-{
-	int x;
-
-	int map[8][8] = {
-    {1, 1, 0, 1, 1, 0, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0},
-    {1, 0, 0, 1, 0, 0, 0, 0},
-    {1, 0, 0, 0, 1, 0, 0, 1},
-    {0, 0, 1, 0, 0, 0, 1, 0},
-    {1, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 1, 0, 0, 1, 0}
-	};
-	/*cast rays*/
-
-	for (x = 0; x < SCREEN_WIDTH; x++) {
-    // Calculate ray position and direction
-    float cameraX = 2 * x / (float)SCREEN_WIDTH - 1; // [-1, 1] range
-    float rayDirX = playerDirX + planeX * cameraX;
-    float rayDirY = playerDirY + planeY * cameraX;
-
-    // Calculate which grid the player is currently in
-    int mapX = (int)playerX;
-    int mapY = (int)playerY;
-
-    // Length of ray from current position to next x or y-side
-    float sideDistX, sideDistY;
-
-    // Length of ray from one side to next x or y-side
-    float deltaDistX = fabs(1 / rayDirX);
-    float deltaDistY = fabs(1 / rayDirY);
-
-    float perpWallDist;
-
-    // Step direction (which way to step in x or y direction)
-    int stepX, stepY;
-    int hit = 0; // Was there a wall hit?
-    int side;    // Was the wall hit on the X or Y side?
-
-    // Initial direction of step
-    if (rayDirX < 0) {
-        stepX = -1;
-        sideDistX = (playerX - mapX) * deltaDistX;
-    } else {
-        stepX = 1;
-        sideDistX = (mapX + 1.0 - playerX) * deltaDistX;
-    }
-    if (rayDirY < 0) {
-        stepY = -1;
-        sideDistY = (playerY - mapY) * deltaDistY;
-    } else {
-        stepY = 1;
-        sideDistY = (mapY + 1.0 - playerY) * deltaDistY;
-    }
-
-    // Perform DDA (Digital Differential Analysis)
-    while (hit == 0) {
-        // Jump to next map square, X or Y direction
-        if (sideDistX < sideDistY) {
-            sideDistX += deltaDistX;
-            mapX += stepX;
-            side = 0; // X side
-        } else {
-            sideDistY += deltaDistY;
-            mapY += stepY;
-            side = 1; // Y side
-        }
-
-        // Check if ray has hit a wall
-        if (map[mapX][mapY] > 0) hit = 1;
-    }
-
-    // Calculate distance to the point of wall hit
-    if (side == 0)
-        perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
-    else
-        perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
-
-    // Calculate height of the wall slice
-    int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
-
-    // Calculate lowest and highest pixel to fill in current stripe
-    int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
-    if (drawStart < 0) drawStart = 0;
-    int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
-    if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
-
-    // Set wall color (based on side hit)
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red color
-    if (side == 1) SDL_SetRenderDrawColor(renderer, 128, 0, 0, 255); // Darker for Y side
-
-    // Draw the wall slice as a vertical line
-    SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
-	}
 	return (0);
 }
