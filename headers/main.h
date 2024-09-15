@@ -26,7 +26,8 @@ typedef struct SDL_Instance
 
 int init_instance(SDL_Instance *instance);
 int raycast(SDL_Renderer *renderer, float playerX, float playerY,
-	float playerDirX, float playerDirY, float planeX, float planeY, int **map);
+	float playerDirX, float playerDirY, float planeX,
+	float planeY, int **map);
 int check_input(float *playerX, float *playerY, float *playerDirX,
 		float *playerDirY, float *planeX, float *planeY);
 void init_maze(int **maze);
@@ -37,8 +38,10 @@ void check_mouse(SDL_Event *event, float *playerDirX,
 float *playerDirY, float *planeX, float *planeY);
 int check_key(SDL_Event *event, float *playerX, float *playerY,
 float *playerDirX, float *playerDirY, float *planeX, float *planeY);
-void render_timer(SDL_Renderer *renderer, TTF_Font *font, int remaining_time);
+void render_timer(SDL_Renderer *renderer, TTF_Font *font,
+		int remaining_time);
 void game_over(SDL_Renderer *renderer, TTF_Font *font);
-void draw_mini_map(SDL_Renderer *renderer, float playerX, float playerY, float playerDirX, float playerDirY, int **map);
+void draw_mini_map(SDL_Renderer *renderer, float playerX, float playerY,
+		float playerDirX, float playerDirY, int **map);
 
 #endif

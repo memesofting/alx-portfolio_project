@@ -15,7 +15,12 @@ void free_maze(int **maze)
 	free(maze);
 }
 
-/* Initialize SDL, create window and renderer */
+/**
+ * init_game - initialises SDL_Instance
+ * @instance: pointer to SDL_Instance
+ * @map: pointer to random maze
+ * Return: 0 on success
+ */
 int init_game(SDL_Instance *instance, int ***map)
 {
 	if (init_instance(instance) != 0)
@@ -32,9 +37,15 @@ int init_game(SDL_Instance *instance, int ***map)
 	return (0);
 }
 
-
-/* Main game loop */
-void game_loop(SDL_Instance *instance, int **map, TTF_Font *font, Uint32 game_duration)
+/**
+ * game_loop - game loop function
+ * @instance: pointer to SDL_Instance instance
+ * @map: maze map array
+ * @font: pointer to font file
+ * @game_duration: duration for each game session
+ */
+void game_loop(SDL_Instance *instance, int **map,
+		TTF_Font *font, Uint32 game_duration)
 {
 	int running = 1;
 	float playerX = 3.0f, playerY = 4.0f, planeX = 0.0f, planeY = 0.66f;
@@ -82,7 +93,12 @@ void game_loop(SDL_Instance *instance, int **map, TTF_Font *font, Uint32 game_du
 	}
 }
 
-/* Free all allocated resources */
+/**
+ * clean_up - frees all allocated memory
+ * @instance: pointer to SDL_Instance instance
+ * @map: maze map array
+ * @font: pointer to font file
+ */
 void clean_up(SDL_Instance *instance, int **map, TTF_Font *font)
 {
 	free_maze(map);
@@ -93,13 +109,17 @@ void clean_up(SDL_Instance *instance, int **map, TTF_Font *font)
 	SDL_Quit();
 }
 
-/* Main function */
+/**
+ * main - game entry point
+ * Return: 0 on success
+ */
 int main(void)
 {
 	srand(time(NULL));
-
+	TTF_Font *font;
 	SDL_Instance instance;
 	int **map;
+
 	/* 90 seconds */
 	Uint32 game_duration = 90000;
 
@@ -113,7 +133,7 @@ int main(void)
 		return (1);
 	}
 	/* Load font */
-	TTF_Font *font = TTF_OpenFont("./Roboto-Medium.ttf", 24); /* Use a valid font file */
+	font = TTF_OpenFont("./Roboto-Medium.ttf", 24);
 	if (!font)
 	{
 		printf("Failed to load font: %s\n", TTF_GetError());
