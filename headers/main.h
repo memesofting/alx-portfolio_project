@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
@@ -10,6 +11,7 @@
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 800
 #define MAP_SIZE 25
+#define MAP_SCALE 10
 
 /**
  * struct SDL_Instance - struct to store window and renderer pointers
@@ -35,5 +37,8 @@ void check_mouse(SDL_Event *event, float *playerDirX,
 float *playerDirY, float *planeX, float *planeY);
 int check_key(SDL_Event *event, float *playerX, float *playerY,
 float *playerDirX, float *playerDirY, float *planeX, float *planeY);
+void render_timer(SDL_Renderer *renderer, TTF_Font *font, int remaining_time);
+void game_over(SDL_Renderer *renderer, TTF_Font *font);
+void draw_mini_map(SDL_Renderer *renderer, float playerX, float playerY, float playerDirX, float playerDirY, int **map);
 
 #endif
