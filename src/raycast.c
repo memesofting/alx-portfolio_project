@@ -2,37 +2,37 @@
 
 /* Function to calculate the direction and setup of the ray */
 void calculateRayDirection(int x, float *rayDirX, float *rayDirY,
-		float playerDirX, float playerDirY, float planeX, float planeY)
+		Player *player)
 {
 	float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;
-	*rayDirX = playerDirX + planeX * cameraX;
-	*rayDirY = playerDirY + planeY * cameraX;
+	*rayDirX = player->playerDirX + player->planeX * cameraX;
+	*rayDirY = player->playerDirY + player->planeY * cameraX;
 }
 
 /* Function to calculate the side distances */
-void calculateSideDist(float playerX, float playerY, int mapX, int mapY,
+void calculateSideDist(Player *player, int mapX, int mapY,
 		float rayDirX, float rayDirY, float *sideDistX, float *sideDistY,
 		float deltaDistX, float deltaDistY, int *stepX, int *stepY)
 {
 	if (rayDirX < 0)
 	{
 		*stepX = -1;
-		*sideDistX = (playerX - mapX) * deltaDistX;
+		*sideDistX = (player->playerX - mapX) * deltaDistX;
 	}
 	else
 	{
 		*stepX = 1;
-		*sideDistX = (mapX + 1.0 - playerX) * deltaDistX;
+		*sideDistX = (mapX + 1.0 - player->playerX) * deltaDistX;
 	}
 	if (rayDirY < 0)
 	{
 		*stepY = -1;
-		*sideDistY = (playerY - mapY) * deltaDistY;
+		*sideDistY = (player->playerY - mapY) * deltaDistY;
 	}
 	else
 	{
 		*stepY = 1;
-		*sideDistY = (mapY + 1.0 - playerY) * deltaDistY;
+		*sideDistY = (mapY + 1.0 - player->playerY) * deltaDistY;
 	}
 }
 
@@ -96,10 +96,15 @@ void renderSlice(SDL_Renderer *renderer, int x, int drawStart, int drawEnd,
 	SDL_RenderDrawLine(renderer, x, drawEnd, x, SCREEN_HEIGHT);
 }
 
-/* Main raycasting function */
-int raycast(SDL_Renderer *renderer, float playerX, float playerY,
-		float playerDirX, float playerDirY,
-		float planeX, float planeY, int **map)
+/**
+ * raycast - main raycasting function
+ * @renderer: SDL_Renderer instance
+ * @player: player properties struct
+ * @map: maze map array
+ * Return: return 0 on success
+ */
+
+int raycast(SDL_Renderer *renderer, Player *player, int **map)
 {
 	int x, stepX, stepY, sideHit;
 
@@ -107,20 +112,19 @@ int raycast(SDL_Renderer *renderer, float playerX, float playerY,
 	{
 		float rayDirX, rayDirY, sideDistX, sideDistY, deltaDistX, deltaDistY;
 
-		calculateRayDirection(x, &rayDirX, &rayDirY, playerDirX,
-				playerDirY, planeX, planeY);
-		int mapX = (int)playerX;
-		int mapY = (int)playerY;
+		calculateRayDirection(x, &rayDirX, &rayDirY, player);
+		int mapX = (int)player->playerX;
+		int mapY = (int)player->playerY;
 
 		deltaDistX = fabs(1 / rayDirX);
 		deltaDistY = fabs(1 / rayDirY);
-		calculateSideDist(playerX, playerY, mapX, mapY, rayDirX, rayDirY,
+		calculateSideDist(player, mapX, mapY, rayDirX, rayDirY,
 				&sideDistX, &sideDistY, deltaDistX, deltaDistY, &stepX, &stepY);
 		if (performDDA(&mapX, &mapY, &sideDistX, &sideDistY, deltaDistX,
 					deltaDistY, &sideHit, stepX, stepY, map))
 		{
-			float perpWallDist = (sideHit == 0) ? (mapX - playerX + (1 - stepX) / 2)
-				/ rayDirX : (mapY - playerY + (1 - stepY) / 2) / rayDirY;
+			float perpWallDist = (sideHit == 0) ? (mapX - player->playerX + (1 - stepX)
+					/ 2) / rayDirX : (mapY - player->playerY + (1 - stepY) / 2) / rayDirY;
 
 			int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
 			int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;

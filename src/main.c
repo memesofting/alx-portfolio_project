@@ -47,9 +47,10 @@ int init_game(SDL_Instance *instance, int ***map)
 void game_loop(SDL_Instance *instance, int **map,
 		TTF_Font *font, Uint32 game_duration)
 {
+	Player *player;
 	int running = 1;
-	float playerX = 3.0f, playerY = 4.0f, planeX = 0.0f, planeY = 0.66f;
-	float playerDirX = -1.0f, playerDirY = 0.0f;
+
+	player = init_player();
 	Uint32 start_time = SDL_GetTicks(), elapsed_time;
 
 	while (running)
@@ -61,8 +62,6 @@ void game_loop(SDL_Instance *instance, int **map,
 		/* Check if time has run out */
 		if (remaining_time <= 0)
 		{
-			printf("Time's up! You lasted %d seconds.\n", game_duration / 1000);
-
 			/* Clear the screen before rendering Game Over */
 			SDL_SetRenderDrawColor(instance->renderer, 0, 0, 0, 255);
 			SDL_RenderClear(instance->renderer);
@@ -73,19 +72,15 @@ void game_loop(SDL_Instance *instance, int **map,
 			SDL_Delay(3000);
 			break;
 		}
-
 		/* Handle input */
-		running = check_input(&playerX, &playerY,
-				&playerDirX, &playerDirY, &planeX, &planeY);
+		running = check_input(player);
 		/* Clear the screen */
 		SDL_SetRenderDrawColor(instance->renderer, 0, 45, 0, 255);
 		SDL_RenderClear(instance->renderer);
 		/* Draw the game scene */
-		raycast(instance->renderer, playerX, playerY,
-				playerDirX, playerDirY, planeX, planeY, map);
+		raycast(instance->renderer, player, map);
 		/*Draw mini map*/
-		draw_mini_map(instance->renderer, playerX, playerY,
-				playerDirX, playerDirY, map);
+		draw_mini_map(instance->renderer, player, map);
 		/* Render the timer */
 		render_timer(instance->renderer, font, remaining_time);
 		/* Present the updated screen */

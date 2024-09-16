@@ -1,7 +1,13 @@
 #include "main.h"
 
-void draw_mini_map(SDL_Renderer *renderer, float playerX, float playerY,
-		float playerDirX, float playerDirY, int **map)
+/**
+ * draw_mini_map - draws maze map on game window
+ * @renderer: SDL_Renderer instance
+ * @player: player properties struct
+ * @map: maze map array
+ */
+
+void draw_mini_map(SDL_Renderer *renderer, Player *player, int **map)
 {
 	int i, j, player_x, player_y, line_end_x, line_end_y;
 	int offset_x, offset_y;
@@ -34,13 +40,13 @@ void draw_mini_map(SDL_Renderer *renderer, float playerX, float playerY,
 	}
 	/*Draw the player as a point*/
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  /*Green for the player*/
-	player_x = offset_x + (int)(playerX * MAP_SCALE);
-	player_y = offset_y + (int)(playerY * MAP_SCALE);
+	player_x = offset_x + (int)(player->playerX * MAP_SCALE);
+	player_y = offset_y + (int)(player->playerY * MAP_SCALE);
 	SDL_RenderDrawPoint(renderer, player_x, player_y);
 	/*Draw player's line of sight*/
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);  /*Red for line of sight*/
 	/*Extend the line 5 tiles*/
-	line_end_x = player_x + (int)(playerDirX * 5 * MAP_SCALE);
-	line_end_y = player_y + (int)(playerDirY * 5 * MAP_SCALE);
+	line_end_x = player_x + (int)(player->playerDirX * 5 * MAP_SCALE);
+	line_end_y = player_y + (int)(player->playerDirY * 5 * MAP_SCALE);
 	SDL_RenderDrawLine(renderer, player_x, player_y, line_end_x, line_end_y);
 }

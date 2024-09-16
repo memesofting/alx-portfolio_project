@@ -1,7 +1,12 @@
 #include "main.h"
 
-int check_input(float *playerX, float *playerY, float *playerDirX,
-		float *playerDirY, float *planeX, float *planeY)
+/**
+ * check_input - checks for player input during gameplay
+ * @player: player properties struct
+ * Return: loop value on success
+ */
+
+int check_input(Player *player)
 {
 	int loop;
 	SDL_Event event;
@@ -15,11 +20,10 @@ int check_input(float *playerX, float *playerY, float *playerDirX,
 				loop = 0;
 				break;
 			case SDL_KEYDOWN:
-				loop = check_key(&event, playerX, playerY,
-						playerDirX, playerDirY, planeX, planeY);
+				loop = check_key(&event, player);
 				break;
 			case SDL_MOUSEMOTION:
-				check_mouse(&event, playerDirX, playerDirY, planeX, planeY);
+				check_mouse(&event, player);
 				break;
 			default:
 				break;
@@ -28,8 +32,14 @@ int check_input(float *playerX, float *playerY, float *playerDirX,
 	return (loop);
 }
 
-int check_key(SDL_Event *event, float *playerX, float *playerY,
-		float *playerDirX, float *playerDirY, float *planeX, float *planeY)
+/**
+ * check_key - checks for keyboard input
+ * @event: SDL event listener
+ * @player: player properties struct
+ * Return: 0 for esc key else 1
+ */
+
+int check_key(SDL_Event *event, Player *player)
 {
 	float speed;
 
@@ -43,31 +53,36 @@ int check_key(SDL_Event *event, float *playerX, float *playerY,
 			}
 			if (event->key.keysym.sym == SDLK_w || event->key.keysym.sym == SDLK_UP)
 			{
-				*playerX += *playerDirX * speed;
-				*playerY += *playerDirY * speed;
+				player->playerX += player->playerDirX * speed;
+				player->playerY += player->playerDirY * speed;
 			}
 			if (event->key.keysym.sym == SDLK_a || event->key.keysym.sym == SDLK_LEFT)
 			{
-				*playerX -= *planeX * speed;
-				*playerY -= *planeY * speed;
+				player->playerX -= player->planeX * speed;
+				player->playerY -= player->planeY * speed;
 			}
 			if (event->key.keysym.sym == SDLK_s || event->key.keysym.sym == SDLK_DOWN)
 			{
-				*playerX -= *playerDirX * speed;
-				*playerY -= *playerDirY * speed;
+				player->playerX -= player->playerDirX * speed;
+				player->playerY -= player->playerDirY * speed;
 			}
 			if (event->key.keysym.sym == SDLK_d || event->key.keysym.sym == SDLK_RIGHT)
 			{
-				*playerX += *planeX * speed;
-				*playerY += *planeY * speed;
+				player->playerX += player->planeX * speed;
+				player->playerY += player->planeY * speed;
 			}
 			break;
 	}
 	return (1);
 }
 
-void check_mouse(SDL_Event *event, float *playerDirX,
-		float *playerDirY, float *planeX, float *planeY)
+/**
+ * check_mouse - checks for mouse movement
+ * @event: SDL event listener
+ * @player: player properties struct
+ */
+
+void check_mouse(SDL_Event *event, Player *player)
 {
 	float rotspeed, oldDirX, oldPlaneX;
 	int xrel;
@@ -77,31 +92,31 @@ void check_mouse(SDL_Event *event, float *playerDirX,
 	if (xrel > 0)
 	{
 		/*Rotate the player's direction right based on the relative mouse movement*/
-		oldDirX = *playerDirX;
-		*playerDirX = *playerDirX * cos(-rotspeed * xrel) -
-			*playerDirY * sin(-rotspeed * xrel);
-		*playerDirY = oldDirX * sin(-rotspeed * xrel) +
-			*playerDirY * cos(-rotspeed * xrel);
+		oldDirX = player->playerDirX;
+		player->playerDirX = player->playerDirX * cos(-rotspeed * xrel) -
+			player->playerDirY * sin(-rotspeed * xrel);
+		player->playerDirY = oldDirX * sin(-rotspeed * xrel) +
+			player->playerDirY * cos(-rotspeed * xrel);
 
-		oldPlaneX = *planeX;
-		*planeX = *planeX * cos(-rotspeed * xrel) -
-			*planeY * sin(-rotspeed * xrel);
-		*planeY = oldPlaneX * sin(-rotspeed * xrel) +
-			*planeY * cos(-rotspeed * xrel);
+		oldPlaneX = player->planeX;
+		player->planeX = player->planeX * cos(-rotspeed * xrel) -
+			player->planeY * sin(-rotspeed * xrel);
+		player->planeY = oldPlaneX * sin(-rotspeed * xrel) +
+			player->planeY * cos(-rotspeed * xrel);
 	}
 	if (xrel < 0)
 	{
 		/*Rotate the player's direction left based on the relative mouse movement*/
-		oldDirX = *playerDirX;
-		*playerDirX = *playerDirX * cos(rotspeed * -xrel) -
-			*playerDirY * sin(rotspeed * -xrel);
-		*playerDirY = oldDirX * sin(rotspeed * -xrel) +
-			*playerDirY * cos(rotspeed * -xrel);
+		oldDirX = player->playerDirX;
+		player->playerDirX = player->playerDirX * cos(rotspeed * -xrel) -
+			player->playerDirY * sin(rotspeed * -xrel);
+		player->playerDirY = oldDirX * sin(rotspeed * -xrel) +
+			player->playerDirY * cos(rotspeed * -xrel);
 
-		oldPlaneX = *planeX;
-		*planeX = *planeX * cos(rotspeed * -xrel) -
-			*planeY * sin(rotspeed * -xrel);
-		*planeY = oldPlaneX * sin(rotspeed * -xrel) +
-			*planeY * cos(rotspeed * -xrel);
+		oldPlaneX = player->planeX;
+		player->planeX = player->planeX * cos(rotspeed * -xrel) -
+			player->planeY * sin(rotspeed * -xrel);
+		player->planeY = oldPlaneX * sin(rotspeed * -xrel) +
+			player->planeY * cos(rotspeed * -xrel);
 	}
 }
