@@ -1,7 +1,7 @@
 MAZE GAME
 
 INTRODUCTION
-The Maze game provides an engaging and immersive gameplay experience that challenges players' navigation skills as they manoeuvre through a series of complex mazes and find their way to the exit within a short period of time.
+The Maze game provides an engaging and immersive gameplay experience that challenges players' navigation skills as they manoeuvre through a series of complex mazes and find their way to the exit within a short time.
 
 
 LIBRARY/TOOLS
@@ -9,5 +9,4 @@ LIBRARY/TOOLS
 - CMake: For building program.
 
 CORE ALGORITHM
-The main algorithm for the project is the  raycasting  which uses DDA(Digital Differential Analysis) to create the 2D maze into 3D
-
+The main algorithm for the project is raycasting  which uses DDA(Digital Differential Analysis) to create the 2D maze into 3D
