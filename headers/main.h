@@ -8,10 +8,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define SCREEN_WIDTH 1200
+#define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 800
 #define MAP_SIZE 25
-#define MAP_SCALE 10
+#define MAP_SCALE 7
 
 /**
  * struct SDL_Instance - struct to store window and renderer pointers
@@ -58,5 +58,6 @@ void render_timer(SDL_Renderer *renderer, TTF_Font *font,
 		int remaining_time);
 void game_over(SDL_Renderer *renderer, TTF_Font *font);
 void draw_mini_map(SDL_Renderer *renderer, Player *player, int **map);
+Player *init_player(void);
 
 #endif
